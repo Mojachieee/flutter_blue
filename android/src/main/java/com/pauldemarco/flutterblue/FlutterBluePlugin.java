@@ -713,6 +713,14 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 if(!mGattServers.containsKey(gatt.getDevice().getAddress())) {
                     gatt.close();
                 }
+            } else if (newState == BluetoothProfile.STATE_CONNECTED) {
+                boolean success = gatt.requestMtu(64);
+                if (!success) {
+                    success = gatt.requestMtu(32);
+                    if (!success) {
+                        log(LogLevel.DEBUG, "Failed to set MTU Size");
+                    }
+                }
             }
             invokeMethodUIThread("DeviceState", ProtoMaker.from(gatt.getDevice(), newState).toByteArray());
         }
